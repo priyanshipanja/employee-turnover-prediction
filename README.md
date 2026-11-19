@@ -1,10 +1,10 @@
-# ⚡ HR Sentinel: Enterprise Employee Turnover & Attrition Prediction Platform
+# Enterprise Employee Turnover & Attrition Prediction Platform
 
 An end-to-end Machine Learning and People Analytics platform designed to predict employee turnover risk, identify key flight-risk drivers, estimate the financial cost of attrition, and generate proactive, tailored HR retention strategies.
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 - **Production Machine Learning Pipeline**:
   - Automated feature engineering: workload-per-project intensity, satisfaction-evaluation perception gap, burnout flags, under-compensated high-performer alerts, tenure plateau metrics.
@@ -30,7 +30,7 @@ An end-to-end Machine Learning and People Analytics platform designed to predict
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 employee-turnover-prediction/
@@ -64,13 +64,13 @@ employee-turnover-prediction/
 
 ---
 
-## 📊 Model Evaluation & Benchmarks
+## Model Evaluation & Benchmarks
 
 All models were evaluated on the held-out test dataset (**3,000 records**):
 
 | Algorithm | ROC-AUC | F1-Score | Accuracy | Production Status |
 |---|---|---|---|---|
-| **Gradient Boosting (XGBoost)** | **0.7572** | 0.3629 | **78.00%** | **🏆 Selected for Production** |
+| **Gradient Boosting (XGBoost)** | **0.7572** | 0.3629 | **78.00%** | **Selected for Production** |
 | Random Forest | 0.7444 | 0.4903 | 65.83% | Benchmark Candidate |
 | Logistic Regression | 0.7445 | 0.4986 | 63.73% | Baseline Candidate |
 
@@ -85,7 +85,7 @@ All models were evaluated on the held-out test dataset (**3,000 records**):
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### 1. Install Dependencies
 ```bash
@@ -160,6 +160,3 @@ python run_tests.py
 - Returns summary statistics, risk breakdown, department aggregations, and individual employee predictions.
 
 ---
-
-## 📄 License
-MIT License.
