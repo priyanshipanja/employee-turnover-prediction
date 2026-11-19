@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Sentinel // Employee Turnover & Attrition Prediction Platform</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234f46e5'/><text y='68' x='20' font-size='55' font-weight='bold' fill='%23fff'>HR</text></svg>">
+  <!-- Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <h1 class="brand-title">HR Sentinel</h1>
+        <p class="brand-subtitle">AI-Powered Employee Turnover Prediction & Retention Intelligence</p>
+      </div>
+    </div>
+    
+    <div class="header-right">
+      <div class="model-badge">
+        <span class="pulse-dot"></span>
+        <span id="headerModelName">GradientBoosting Model Active</span>
+        <span class="badge-pill">ROC-AUC: 0.76</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+    
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-button active" data-tab="tab-single">
+        👤 Individual Risk Diagnostic
+      </button>
+      <button class="tab-button" data-tab="tab-batch">
+        📊 Batch Workforce Analytics
+      </button>
+      <button class="tab-button" data-tab="tab-model">
+        🔬 Model Architecture & Explainability
+      </button>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: INDIVIDUAL EMPLOYEE EVALUATOR       -->
+    <!-- ========================================== -->
+    <section id="tab-single" class="tab-pane active">
+      <div class="archetype-bar">
+        <span class="archetype-label">⚡ Load Sample Profile:</span>
+        <button class="btn btn-sm btn-outline" onclick="loadArchetype('burnout_performer')">🔥 Overworked Senior</button>
+        <button class="btn btn-sm btn-outline" onclick="loadArchetype('unrewarded_talent')">💸 Underpaid High Performer</button>
+        <button class="btn btn-sm btn-outline" onclick="loadArchetype('disengaged_junior')">💤 Disengaged Associate</button>
+        <button class="btn btn-sm btn-outline" onclick="loadArchetype('stable_veteran')">⭐ Retained Lead</button>
+      </div>
+
+      <div class="diagnostic-grid">
+        <!-- Input Form -->
+        <div class="card form-card">
+          <div class="card-header">
+            <h3>Employee Parameters</h3>
+            <span class="badge-secondary">Real-time Inference</span>
+          </div>
+
+          <form id="employeeForm" class="form-body">
+            <!-- Row: Satisfaction & Evaluation -->
+            <div class="form-row">
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="satisfaction_level">Job Satisfaction</label>
+                  <span class="value-display" id="val_satisfaction">65%</span>
+                </div>
+                <input type="range" id="satisfaction_level" min="0.05" max="1.0" step="0.01" value="0.65">
+              </div>
+
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="last_evaluation">Last Performance Evaluation</label>
+                  <span class="value-display" id="val_evaluation">70%</span>
+                </div>
+                <input type="range" id="last_evaluation" min="0.1" max="1.0" step="0.01" value="0.70">
+              </div>
+            </div>
+
+            <!-- Row: Hours & Projects -->
+            <div class="form-row">
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="average_monthly_hours">Monthly Work Hours</label>
+                  <span class="value-display" id="val_hours">200 hrs</span>
+                </div>
+                <input type="range" id="average_monthly_hours" min="96" max="310" step="1" value="200">
+              </div>
+
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="number_projects">Assigned Projects</label>
+                  <span class="value-display" id="val_projects">4</span>
+                </div>
+                <input type="range" id="number_projects" min="2" max="7" step="1" value="4">
+              </div>
+            </div>
+
+            <!-- Row: Tenure & Commute -->
+            <div class="form-row">
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="time_spent_company">Tenure at Company</label>
+                  <span class="value-display" id="val_tenure">3 yrs</span>
+                </div>
+                <input type="range" id="time_spent_company" min="2" max="10" step="1" value="3">
+              </div>
+
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="commute_distance_km">Commute Distance</label>
+                  <span class="value-display" id="val_commute">15 km</span>
+                </div>
+                <input type="range" id="commute_distance_km" min="1" max="55" step="1" value="15">
+              </div>
+            </div>
+
+            <!-- Row: Department & Salary -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="department">Department</label>
+                <select id="department">
+                  {% for dept in departments %}
+                  <option value="{{ dept }}">{{ dept | capitalize }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="salary_level">Salary Band</label>
+                <select id="salary_level">
+                  <option value="low">Low (Market Bottom 30%)</option>
+                  <option value="medium" selected>Medium (Market Median)</option>
+                  <option value="high">High (Market Top 20%)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row: Flags / Toggles -->
+            <div class="toggles-grid">
+              <label class="toggle-card">
+                <input type="checkbox" id="overtime">
+                <div class="toggle-content">
+                  <span class="toggle-title">Frequent Overtime</span>
+                  <span class="toggle-desc">Regularly exceeds standard 40 hr workweek</span>
+                </div>
+              </label>
+
+              <label class="toggle-card">
+                <input type="checkbox" id="promotion_last_5years">
+                <div class="toggle-content">
+                  <span class="toggle-title">Promoted in Last 5 Years</span>
+                  <span class="toggle-desc">Received title or pay advancement</span>
+                </div>
+              </label>
+
+              <label class="toggle-card">
+                <input type="checkbox" id="work_accident">
+                <div class="toggle-content">
+                  <span class="toggle-title">Work Accident</span>
+                  <span class="toggle-desc">Involved in workplace incident</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="form-footer">
+              <button type="button" class="btn btn-primary" onclick="evaluateSingle()">
+                🔍 Calculate Turnover Probability
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Diagnostic Output -->
+        <div class="card results-card">
+          <div class="card-header">
+            <h3>Turnover Risk Assessment</h3>
+            <span id="riskBadge" class="risk-pill risk-low">LOW RISK</span>
+          </div>
+
+          <div class="results-body">
+            <!-- Gauge & Metric Row -->
+            <div class="gauge-section">
+              <div class="gauge-chart-wrapper">
+                <canvas id="gaugeChart" width="160" height="90"></canvas>
+                <div class="gauge-number" id="probNumber">14.2%</div>
+                <div class="gauge-sub">Churn Probability</div>
+              </div>
+
+              <div class="metrics-column">
+                <div class="kpi-mini">
+                  <span class="kpi-label">Outcome Classification</span>
+                  <strong class="kpi-val" id="predLabel">Likely to Stay</strong>
+                </div>
+                <div class="kpi-mini">
+                  <span class="kpi-label">Est. Replacement Cost</span>
+                  <strong class="kpi-val text-amber" id="replacementCost">$37,500</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Risk Drivers Breakdown -->
+            <div class="breakdown-section">
+              <h4>Primary Flight-Risk Drivers</h4>
+              <div id="riskFactorsList" class="factors-container">
+                <div class="empty-state">Adjust employee parameters on the left to inspect risk drivers.</div>
+              </div>
+            </div>
+
+            <!-- Actionable Retention Recommendations -->
+            <div class="recommendations-section">
+              <h4>Tailored HR Retention Strategy</h4>
+              <ul id="recommendationsList" class="actions-list">
+                <li>Quarterly retention check-ins recommended.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: BATCH WORKFORCE ROSTER ANALYTICS    -->
+    <!-- ========================================== -->
+    <section id="tab-batch" class="tab-pane">
+      <div class="batch-upload-bar card">
+        <div class="upload-flex">
+          <div>
+            <h3>Analyze Full Employee Roster</h3>
+            <p>Upload a CSV file with team or organizational data to identify department-wide churn clusters.</p>
+          </div>
+          <div class="upload-actions">
+            <a href="/api/download-sample-csv" class="btn btn-outline">📥 Download Sample CSV</a>
+            <input type="file" id="batchFileInput" accept=".csv" style="display: none;">
+            <button class="btn btn-primary" onclick="document.getElementById('batchFileInput').click()">
+              📤 Upload & Score Roster
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch KPI Cards -->
+      <div id="batchSummarySection" class="kpi-grid" style="display: none;">
+        <div class="kpi-card">
+          <span class="kpi-title">Total Headcount</span>
+          <span class="kpi-big" id="batchTotal">25</span>
+          <span class="kpi-trend">Employees Analyzed</span>
+        </div>
+        <div class="kpi-card border-red">
+          <span class="kpi-title">High Churn Risk</span>
+          <span class="kpi-big text-red" id="batchHighRisk">6</span>
+          <span class="kpi-trend">Immediate Flight Risk</span>
+        </div>
+        <div class="kpi-card border-amber">
+          <span class="kpi-title">Medium Risk</span>
+          <span class="kpi-big text-amber" id="batchMedRisk">8</span>
+          <span class="kpi-trend">Needs Retention Plan</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Financial Exposure</span>
+          <span class="kpi-big text-red" id="batchExposure">$245,000</span>
+          <span class="kpi-trend">Estimated Cost of Churn</span>
+        </div>
+      </div>
+
+      <!-- Department Distribution Chart -->
+      <div id="batchChartSection" class="card" style="display: none; margin-top: 18px;">
+        <div class="card-header">
+          <h3>Department Churn Rate Distribution</h3>
+          <span class="badge-secondary">% High/Med Risk by Team</span>
+        </div>
+        <div style="height: 250px; padding: 12px;">
+          <canvas id="deptChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Batch Preview Table -->
+      <div id="batchTableCard" class="card" style="display: none; margin-top: 18px;">
+        <div class="card-header">
+          <h3>Employee Risk Roster Preview</h3>
+          <span class="badge-secondary" id="tableRecordCount">Showing 25 Records</span>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="batchDataTable">
+            <thead>
+              <tr>
+                <th>Employee ID</th>
+                <th>Department</th>
+                <th>Satisfaction</th>
+                <th>Evaluation</th>
+                <th>Monthly Hrs</th>
+                <th>Salary</th>
+                <th>Overtime</th>
+                <th>Churn Risk</th>
+                <th>Est. Cost</th>
+              </tr>
+            </thead>
+            <tbody id="batchTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: MODEL PERFORMANCE & EXPLAINABILITY  -->
+    <!-- ========================================== -->
+    <section id="tab-model" class="tab-pane">
+      <div class="model-meta-grid">
+        <!-- Global Feature Importances -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Top 10 Global Feature Importances</h3>
+            <span class="badge-secondary">Gini / Split Gain</span>
+          </div>
+          <div style="height: 320px; padding: 12px;">
+            <canvas id="featureChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Model Benchmarks & Metrics -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Algorithm Evaluation & Validation</h3>
+            <span class="badge-secondary">Held-Out Test Set (3,000 samples)</span>
+          </div>
+          <div class="card-body">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th>Algorithm</th>
+                  <th>ROC-AUC</th>
+                  <th>F1-Score</th>
+                  <th>Accuracy</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="benchmarkTableBody">
+                <tr><td>GradientBoosting</td><td><strong>0.7572</strong></td><td>0.3629</td><td>78.0%</td><td><span class="risk-pill risk-low">Production</span></td></tr>
+                <tr><td>RandomForest</td><td>0.7444</td><td>0.4903</td><td>65.8%</td><td><span>Benchmark</span></td></tr>
+                <tr><td>LogisticRegression</td><td>0.7445</td><td>0.4986</td><td>63.7%</td><td><span>Baseline</span></td></tr>
+              </tbody>
+            </table>
+
+            <div class="confusion-box">
+              <h4>Confusion Matrix (Test Evaluation)</h4>
+              <div class="cm-grid">
+                <div class="cm-cell"><span class="cm-val" id="cmTN">2,168</span><span class="cm-label">True Negative (Stayed)</span></div>
+                <div class="cm-cell"><span class="cm-val text-amber" id="cmFP">172</span><span class="cm-label">False Positive</span></div>
+                <div class="cm-cell"><span class="cm-val text-red" id="cmFN">488</span><span class="cm-label">False Negative</span></div>
+                <div class="cm-cell"><span class="cm-val text-green" id="cmTP">172</span><span class="cm-label">True Positive (Turnover)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

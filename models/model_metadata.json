@@ -1,0 +1,81 @@
+{
+  "model_name": "GradientBoosting",
+  "trained_at": "2026-11-19T12:45:02.621840",
+  "n_train_samples": 12000,
+  "n_test_samples": 3000,
+  "top_features": {
+    "tenure_plateau": 0.47350001335144043,
+    "satisfaction_level": 0.056299999356269836,
+    "burnout_flag": 0.048500001430511475,
+    "salary_level_high": 0.04149999842047691,
+    "overtime": 0.030700000002980232,
+    "salary_level_low": 0.02419999986886978,
+    "last_evaluation": 0.021800000220537186,
+    "disengagement_flag": 0.020400000736117363,
+    "average_monthly_hours": 0.02019999921321869,
+    "department_accounting": 0.017999999225139618,
+    "department_IT": 0.017999999225139618,
+    "commute_distance_km": 0.016899999231100082,
+    "work_accident": 0.015799999237060547,
+    "department_RandD": 0.015200000256299973,
+    "department_marketing": 0.01510000042617321
+  },
+  "metrics": {
+    "accuracy": 0.78,
+    "precision": 0.5802,
+    "recall": 0.264,
+    "f1_score": 0.3629,
+    "roc_auc": 0.7572,
+    "pr_auc": 0.4971,
+    "confusion_matrix": {
+      "true_negatives": 2152,
+      "false_positives": 136,
+      "false_negatives": 524,
+      "true_positives": 188
+    },
+    "classification_report": {
+      "0": {
+        "precision": 0.804185351270553,
+        "recall": 0.9405594405594405,
+        "f1-score": 0.8670427074939565,
+        "support": 2288.0
+      },
+      "1": {
+        "precision": 0.5802469135802469,
+        "recall": 0.2640449438202247,
+        "f1-score": 0.36293436293436293,
+        "support": 712.0
+      },
+      "accuracy": 0.78,
+      "macro avg": {
+        "precision": 0.6922161324253999,
+        "recall": 0.6023021921898326,
+        "f1-score": 0.6149885352141597,
+        "support": 3000.0
+      },
+      "weighted avg": {
+        "precision": 0.7510372953920537,
+        "recall": 0.78,
+        "f1-score": 0.7474009937184797,
+        "support": 3000.0
+      }
+    }
+  },
+  "all_model_benchmarks": {
+    "RandomForest": {
+      "roc_auc": 0.7444,
+      "f1": 0.4903,
+      "accuracy": 0.6583
+    },
+    "GradientBoosting": {
+      "roc_auc": 0.7572,
+      "f1": 0.3629,
+      "accuracy": 0.78
+    },
+    "LogisticRegression": {
+      "roc_auc": 0.7445,
+      "f1": 0.4986,
+      "accuracy": 0.6373
+    }
+  }
+}
